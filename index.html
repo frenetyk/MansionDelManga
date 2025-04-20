@@ -1,48 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Manga</title>
+    <title>Consulta de Mangas</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    
-    <div class="container">
-        <img src="imagenes/banner_mansion.png" alt="Descripción de la imagen" width="500" height="300", style="display: block; margin-left: auto; margin-right: auto;">
-        <h1>📚 La Mansión del Manga</h1>
-        <div class="filters">
-            <!-- Barra de búsqueda existente -->
-            <input type="text" id="searchInput" placeholder="Buscar por título, guionista...">
-            
-            <!-- Nuevo filtro por editorial -->
+    <!--<img src="imagenes/banner_mansion.png" alt="Descripción de la imagen" width="500" height="300", style="display: block; margin-left: auto; margin-right: auto;">-->
+    <header>
+        <div class="banner-container">
+            <img src="imagenes/banner_mansion.png" alt="Banner" class="banner-img">
+        </div>
+        <h1>Catálogo De Mangas</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar por título, guionista o dibujante...">
+            <select id="demografiaFilter">
+                <option value="">Todas las demografías</option>
+                <!-- Opciones dinámicas desde JSON -->
+            </select>
             <select id="editorialFilter">
                 <option value="">Todas las editoriales</option>
-                <!-- Las opciones se cargarán con JavaScript -->
+                <!-- Opciones dinámicas desde JSON -->
             </select>
         </div>
-        
 
-        <!-- Tabla de datos -->
-        <table id="mangaTable">
-            <thead>
-                <tr>
-                    <th>Portada</th>                
-                    <th onclick="sortTable(0)">Título ▲▼</th>
-                    <th onclick="sortTable(1)">Guionista ▲▼</th>
-                    <th onclick="sortTable(2)">Dibujante ▲▼</th>
-                    <th onclick="sortTable(3)">Tomos ▲▼</th>
-                    <th onclick="sortTable(4)">Editorial ▲▼</th>
-                    <th>Enlace</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <!-- Los datos se cargarán aquí con JavaScript -->
-            </tbody>
-        </table>
-    </div>
-
-
+        <!--aqui va el ORDENAR-->
+        <div class="search-container">
+            <!-- Tus otros filtros aquí... -->
+            <button id="sortButton">Ordenar A-Z</button>
+        </div>
+    </header>
+    <main id="mangasContainer"></main>
     <script src="script.js"></script>
 </body>
 </html>
