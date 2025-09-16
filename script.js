@@ -247,7 +247,7 @@ function handleImageError(img, title) {
     img.onerror = null; // Prevenir bucles infinitos
 }
 
-// Mostrar portadas en modal
+// Reemplazar la función showCovers con esta versión mejorada
 function showCovers(title, images) {
     const modal = document.getElementById('coversModal');
     const titleElement = document.getElementById('coversModalTitle');
@@ -256,30 +256,187 @@ function showCovers(title, images) {
     titleElement.textContent = `Portadas de ${title}`;
     gallery.innerHTML = '';
     
+    // Verificar si hay imágenes
     if (!images || images.length === 0) {
-        gallery.innerHTML = '<p class="no-covers">No hay portadas disponibles</p>';
+        gallery.innerHTML = '<p>No hay portadas disponibles</p>';
         modal.style.display = 'block';
         return;
     }
     
-    images.forEach(image => {
-        const imgContainer = document.createElement('div');
-        imgContainer.className = 'cover-container';
+    // Crear contenedor para cada imagen con número
+    images.forEach((image, index) => {
+        const container = document.createElement('div');
+        container.className = 'cover-container';
         
         const img = document.createElement('img');
-        img.className = 'cover-image';
+        img.className = 'cover-image modal-cover';
         img.src = image;
-        img.alt = `Portada de ${title}`;
+        img.alt = `Portada ${index + 1} de ${title}`;
+        img.loading = 'lazy'; // Carga diferida para mejor rendimiento
         img.onerror = function() {
-            this.src = 'https://via.placeholder.com/150x200/cccccc/666666?text=Imagen+no+disponible';
-            this.onerror = null; // Prevenir bucles infinitos
+            this.src = 'https://via.placeholder.com/300x400/cccccc/666666?text=Imagen+no+disponible';
         };
         
-        imgContainer.appendChild(img);
-        gallery.appendChild(imgContainer);
+        const number = document.createElement('p');
+        number.className = 'cover-number';
+        number.textContent = `Portada ${index + 1} de ${images.length}`;
+        number.style.textAlign = 'center';
+        number.style.marginTop = '0.5rem';
+        number.style.fontSize = '0.9rem';
+        number.style.color = '#666';
+        
+        container.appendChild(img);
+        container.appendChild(number);
+        gallery.appendChild(container);
     });
     
     modal.style.display = 'block';
+    
+    // Añadir funcionalidad de swipe para móviles
+    setupSwipeGestures(gallery);
+}
+
+// Función para configurar gestos de deslizamiento en móviles
+function setupSwipeGestures(gallery) {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let currentImageIndex = 0;
+    const images = gallery.querySelectorAll('.cover-container');
+    
+    // Ocultar todas las imágenes excepto la primera
+    images.forEach((img, index) => {
+        img.style.display = index === 0 ? 'block' : 'none';
+    });
+    
+    // Solo activar swipe si hay más de una imagen
+    if (images.length <= 1) return;
+    
+    // Añadir indicador de navegación
+    const navIndicator = document.createElement('div');
+    navIndicator.style.textAlign = 'center';
+    navIndicator.style.margin = '1rem 0';
+    navIndicator.innerHTML = `
+        <button class="nav-button" id="prevCover">◀</button>
+        <span id="currentIndicator">1/${images.length}</span>
+        <button class="nav-button" id="nextCover">▶</button>
+    `;
+    gallery.parentNode.insertBefore(navIndicator, gallery.nextSibling);
+    
+    // Estilos para botones de navegación
+    const style = document.createElement('style');
+    style.textContent = `
+        .nav-button {
+            background: var(--accent-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            margin: 0 0.5rem;
+            cursor: pointer;
+        }
+        .nav-button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Funcionalidad para botones de navegación
+    document.getElementById('prevCover').addEventListener('click', () => {
+        navigateCovers(-1);
+    });
+    
+    document.getElementById('nextCover').addEventListener('click', () => {
+        navigateCovers(1);
+    });
+    
+    // Funcionalidad para gestos táctiles
+    gallery.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    
+    gallery.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+    
+    // Funcionalidad para teclado
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') navigateCovers(-1);
+        if (e.key === 'ArrowRight') navigateCovers(1);
+        if (e.key === 'Escape') document.getElementById('closeCoversModal').click();
+    });
+    
+    function handleSwipe() {
+        const minSwipeDistance = 50; // Distancia mínima para considerar un swipe
+        const distance = touchStartX - touchEndX;
+        
+        if (Math.abs(distance) < minSwipeDistance) return;
+        
+        if (distance > 0) {
+            navigateCovers(1); // Swipe izquierda -> siguiente imagen
+        } else {
+            navigateCovers(-1); // Swipe derecha -> imagen anterior
+        }
+    }
+    
+    function navigateCovers(direction) {
+        currentImageIndex += direction;
+        
+        // Navegación circular
+        if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+        if (currentImageIndex >= images.length) currentImageIndex = 0;
+        
+        // Ocultar todas las imágenes
+        images.forEach(img => img.style.display = 'none');
+        
+        // Mostrar imagen actual
+        images[currentImageIndex].style.display = 'block';
+        
+        // Actualizar indicador
+        document.getElementById('currentIndicator').textContent = 
+            `${currentImageIndex + 1}/${images.length}`;
+    }
+}
+
+// Mejorar la función showDescription para móviles
+function showDescription(manga) {
+    const modal = document.getElementById('descriptionModal');
+    const titleElement = document.getElementById('descriptionModalTitle');
+    const detailsElement = document.getElementById('descriptionModalDetails');
+    const descriptionElement = document.getElementById('descriptionModalText');
+    
+    titleElement.textContent = manga.titulo;
+    
+    detailsElement.innerHTML = `
+        <p><strong>Demografia:</strong> ${manga.demografia}</p>
+        <p><strong>Volúmenes:</strong> ${manga.volumenes}</p>
+        <p><strong>Editorial:</strong> ${manga.editorial}</p>
+        <p><strong>Guionista:</strong> ${manga.guionista}</p>
+        <p><strong>Dibujante:</strong> ${manga.dibujante}</p>
+    `;
+    
+    descriptionElement.textContent = manga.descripcion;
+    
+    modal.style.display = 'block';
+    
+    // Añadir funcionalidad de cierre con gesto de deslizamiento hacia abajo
+    let touchStartY = 0;
+    
+    modal.addEventListener('touchstart', e => {
+        touchStartY = e.changedTouches[0].screenY;
+    }, false);
+    
+    modal.addEventListener('touchend', e => {
+        const touchEndY = e.changedTouches[0].screenY;
+        const distance = touchEndY - touchStartY;
+        
+        // Si el deslizamiento hacia abajo es suficientemente largo, cerrar modal
+        if (distance > 100) {
+            document.getElementById('closeDescriptionModal').click();
+        }
+    }, false);
 }
 
 // Mostrar descripción en modal

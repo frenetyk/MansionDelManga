@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Mangas</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+    /* Mejorar la experiencia táctil en dispositivos móviles */
+    @media (max-width: 768px) {
+        .manga-card {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .manga-button, .manga-link, .pagination-button {
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+    
+    /* Prevenir zoom no deseado en inputs */
+    @media screen and (max-width: 768px) {
+        input, select, textarea {
+            font-size: 16px; /* Previene zoom en iOS */
+        }
+    }
+</style>
 </head>
 <body>
     <header>
@@ -25,7 +48,7 @@
                 <select id="statusFilter">
                     <option value="">Todos</option>
                     <option value="completa">Completos</option>
-                    <option value="abierta">En curso</option>
+                    <option value="abierta">Subiendo</option>
                 </select>
             </div>
             <div class="filter-group">

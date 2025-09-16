@@ -364,3 +364,76 @@ select {
         height: 160px;
     }
 }
+
+/* Añadir estas reglas al final del archivo CSS */
+
+/* Estilos específicos para móviles */
+@media (max-width: 768px) {
+    /* Ajustes para la galería de portadas en móvil */
+    .covers-gallery {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .cover-image {
+        height: auto;
+        max-height: 70vh;
+        width: 100%;
+        object-fit: contain;
+    }
+    
+    /* Modal más ajustado para móviles */
+    .modal-content {
+        margin: 1rem auto;
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    /* Mejorar visualización de botones en móvil */
+    .manga-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .manga-button, .manga-link {
+        text-align: center;
+        width: 100%;
+    }
+}
+
+/* Añadir estas reglas para mejorar la visualización de imágenes */
+.cover-image {
+    width: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    background-color: #f0f0f0;
+    margin-bottom: 0.5rem;
+}
+
+/* Clase específica para imágenes en modal de portadas */
+.modal-cover {
+    max-width: 100%;
+    max-height: 70vh;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Mejorar visualización del modal de descripción */
+#descriptionModalText {
+    line-height: 1.6;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+/* Personalizar scrollbar para modal de descripción */
+#descriptionModalText::-webkit-scrollbar {
+    width: 6px;
+}
+
+#descriptionModalText::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 3px;
+}
