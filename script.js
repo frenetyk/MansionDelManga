@@ -221,26 +221,26 @@ function displayMangas() {
         // Escapar comillas en el título para evitar problemas con JSON
         const escapedTitle = manga.titulo.replace(/'/g, "\\'").replace(/"/g, '\\"');
         
-        mangaCard.innerHTML = `
-            <div class="manga-image-container">
-                <img class="manga-image" src="${mainImage}" alt="${manga.titulo}" onerror="handleImageError(this, '${manga.titulo}')">
+        // En la función displayMangas(), modifica el innerHTML de mangaCard:
+    mangaCard.innerHTML = `
+        <div class="manga-image-container">
+            <img class="manga-image" src="${mainImage}" alt="${manga.titulo}" onerror="handleImageError(this, '${manga.titulo}')">
+        </div>
+     <div class="manga-info">
+        <h3 class="manga-title">${manga.titulo}</h3>
+        <div class="manga-actions">
+            <button class="manga-button view-covers-btn" data-title="${escapedTitle}" data-images='${JSON.stringify(manga.imagenes)}'>
+                <i class="fas fa-images"></i> Portadas
+            </button>
+            <button class="manga-button view-desc-btn" data-manga='${JSON.stringify(manga).replace(/'/g, "\\'")}'>
+                <i class="fas fa-info-circle"></i> Info
+            </button>
+            ${manga.enlace ? `<a class="manga-link" href="${manga.enlace}" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Enlace
+                </a>` : ''}
             </div>
-            <div class="manga-info">
-                <h3 class="manga-title">${manga.titulo}</h3>
-                <div class="manga-details">
-                    <p><strong>Demografia:</strong> ${manga.demografia}</p>
-                    <p><strong>Volúmenes:</strong> ${manga.volumenes}</p>
-                    <p><strong>Guionista:</strong> ${manga.guionista}</p>
-                    <p><strong>Dibujante:</strong> ${manga.dibujante}</p>
-                </div>
-                <p class="manga-description">${truncateDescription(manga.descripcion, 150)}</p>
-                <div class="manga-actions">
-                    <button class="manga-button view-covers-btn" data-title="${escapedTitle}" data-images='${JSON.stringify(manga.imagenes)}'>Ver Portadas</button>
-                    <button class="manga-button view-desc-btn" data-manga='${JSON.stringify(manga).replace(/'/g, "\\'")}'>Ver Descripción</button>
-                    ${manga.enlace ? `<a class="manga-link" href="${manga.enlace}" target="_blank">Ver Enlace</a>` : ''}
-                </div>
-            </div>
-        `;
+        </div>
+`;
         
         mangaGrid.appendChild(mangaCard);
     });
