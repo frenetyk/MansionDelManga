@@ -223,10 +223,10 @@ function displayMangas() {
         
         // En la función displayMangas(), modifica el innerHTML de mangaCard:
     mangaCard.innerHTML = `
-        <div class="manga-image-container">
-            <img class="manga-image" src="${mainImage}" alt="${manga.titulo}" onerror="handleImageError(this, '${manga.titulo}')">
-        </div>
-     <div class="manga-info">
+    <div class="manga-image-container">
+        <img class="manga-image" src="${mainImage}" alt="${manga.titulo}" onerror="handleImageError(this, '${manga.titulo}')">
+    </div>
+    <div class="manga-info">
         <h3 class="manga-title">${manga.titulo}</h3>
         <div class="manga-actions">
             <button class="manga-button view-covers-btn" data-title="${escapedTitle}" data-images='${JSON.stringify(manga.imagenes)}'>
@@ -237,9 +237,9 @@ function displayMangas() {
             </button>
             ${manga.enlace ? `<a class="manga-link" href="${manga.enlace}" target="_blank">
                 <i class="fas fa-external-link-alt"></i> Enlace
-                </a>` : ''}
-            </div>
+            </a>` : ''}
         </div>
+    </div>
 `;
         
         mangaGrid.appendChild(mangaCard);

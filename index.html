@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Mangas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
     /* Mejorar la experiencia táctil en dispositivos móviles */
@@ -33,32 +32,43 @@
 </head>
 <body>
     <header>
-        <h1>Catálogo de Mangas</h1>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Buscar por título, guionista o dibujante...">
-            <button id="searchButton">Buscar</button>
+        <div class="header-content">
+            <a href="#" class="logo">
+                <i class="fas fa-book-open"></i>
+                MangaCollection
+            </a>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Buscar mangas...">
+                <button id="searchButton">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+            <button id="toggleFilters">
+                <i class="fas fa-filter"></i> Mostrar Filtros
+            </button>
         </div>
-        <button class="toggle-filters" id="toggleFilters">Mostrar Filtros</button>
-        <div class="filters">
-            <div class="filter-group">
-                <label for="demographyFilter">Demografia:</label>
-                <select id="demographyFilter">
-                    <option value="">Todas</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="statusFilter">Estado:</label>
-                <select id="statusFilter">
-                    <option value="">Todos</option>
-                    <option value="completa">Completos</option>
-                    <option value="abierta">Subiendo</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="editorialFilter">Editorial:</label>
-                <select id="editorialFilter">
-                    <option value="">Todas</option>
-                </select>
+        <div class="filters-container">
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="demographyFilter">Demografia:</label>
+                    <select id="demographyFilter">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter">Estado:</label>
+                    <select id="statusFilter">
+                        <option value="">Todos</option>
+                        <option value="completa">Completos</option>
+                        <option value="abierta">Subiendo</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="editorialFilter">Editorial:</label>
+                    <select id="editorialFilter">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -77,7 +87,7 @@
     <div class="modal" id="coversModal">
         <div class="modal-content">
             <span class="close-button" id="closeCoversModal">&times;</span>
-            <h2 id="coversModalTitle"></h2>
+            <h2 class="modal-title" id="coversModalTitle"></h2>
             <div class="covers-gallery" id="coversGallery"></div>
         </div>
     </div>
@@ -86,7 +96,7 @@
     <div class="modal" id="descriptionModal">
         <div class="modal-content">
             <span class="close-button" id="closeDescriptionModal">&times;</span>
-            <h2 id="descriptionModalTitle"></h2>
+            <h2 class="modal-title" id="descriptionModalTitle"></h2>
             <div class="manga-details" id="descriptionModalDetails"></div>
             <p class="manga-description" id="descriptionModalText"></p>
         </div>
