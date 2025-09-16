@@ -21,8 +21,7 @@ body {
 header {
     background-color: var(--dark-color);
     color: white;
-    padding: 1rem;
-    text-align: center;
+    padding: 0.5rem;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -30,19 +29,19 @@ header {
 }
 
 h1 {
-    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
 }
 
 .search-container {
     display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 #searchInput {
     padding: 0.5rem;
-    width: 70%;
-    max-width: 500px;
+    flex-grow: 1;
     border: none;
     border-radius: 4px 0 0 4px;
 }
@@ -56,12 +55,22 @@ h1 {
     cursor: pointer;
 }
 
+.toggle-filters {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--accent-color);
+    color: var(--dark-color);
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    display: none;
+}
+
 .filters {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .filter-group {
@@ -83,8 +92,8 @@ select {
 .manga-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
+    gap: 1rem;
+    padding: 1rem;
 }
 
 .manga-card {
@@ -94,8 +103,6 @@ select {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
 }
 
 .manga-card:hover {
@@ -103,30 +110,14 @@ select {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* CONTENEDOR DE LA PORTADA PRINCIPAL - CENTRADO */
-.manga-image-container {
+.manga-image {
     width: 100%;
     height: 350px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    background-color: #f0f0f0;
-}
-
-.manga-image {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .manga-info {
     padding: 1rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
 }
 
 .manga-title {
@@ -148,14 +139,11 @@ select {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    flex-grow: 1;
 }
 
 .manga-actions {
     display: flex;
     justify-content: space-between;
-    gap: 0.5rem;
-    margin-top: auto;
 }
 
 .manga-button {
@@ -166,16 +154,12 @@ select {
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: all 0.3s ease;
-    flex: 1;
-    text-align: center;
+    transition: background-color 0.3s ease;
 }
 
 .manga-button:hover {
     background-color: var(--primary-color);
     color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .manga-link {
@@ -187,7 +171,6 @@ select {
     border-radius: 4px;
     font-size: 0.9rem;
     transition: background-color 0.3s ease;
-    text-align: center;
 }
 
 .manga-link:hover {
@@ -197,7 +180,7 @@ select {
 .pagination {
     display: flex;
     justify-content: center;
-    margin: 2rem 0;
+    margin: 1rem 0;
     gap: 0.5rem;
 }
 
@@ -250,7 +233,6 @@ select {
     color: #666;
 }
 
-/* Estilos para la galería de portadas */
 .covers-gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -258,54 +240,17 @@ select {
     margin-top: 1.5rem;
 }
 
-.cover-container {
-    text-align: center;
-}
-
 .cover-image {
     width: 100%;
     height: 200px;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 4px;
+    cursor: pointer;
     transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .cover-image:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Estilos para el mensaje de no portadas */
-.no-covers {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-    font-style: italic;
-}
-
-/* Mejoras para el modal de descripción */
-#descriptionModal .modal-content {
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-#descriptionModalText {
-    line-height: 1.6;
-    white-space: pre-line;
-    margin-top: 1rem;
-}
-
-/* Estilo para cuando las imágenes están cargando */
-.manga-image.loading {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
 }
 
 .no-results {
@@ -316,60 +261,85 @@ select {
     color: #666;
 }
 
-/* Mejoras para dispositivos móviles */
+/* Media queries para móviles */
 @media (max-width: 768px) {
-    .manga-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        padding: 1rem;
-        gap: 1rem;
+    body {
+        padding-top: 0; /* Eliminamos el padding superior */
+    }
+    
+    header {
+        position: static; /* Cambiamos de sticky a static */
+        padding: 0.5rem;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .search-container {
+        flex-direction: column;
+        margin-bottom: 0.5rem;
+    }
+    
+    #searchInput {
+        width: 100%;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+    }
+    
+    #searchButton {
+        width: 100%;
+        border-radius: 4px;
+    }
+    
+    .toggle-filters {
+        display: block; /* Mostramos el botón de filtros */
     }
     
     .filters {
-        flex-direction: column;
-        align-items: center;
+        display: none; /* Ocultamos los filtros por defecto */
+        margin-bottom: 0.5rem;
     }
     
-    .filter-group {
-        width: 80%;
+    .filters.active {
+        display: flex; /* Mostramos cuando están activos */
+    }
+    
+    .manga-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .manga-image {
+        height: 200px;
+    }
+    
+    .manga-info {
+        padding: 0.5rem;
+    }
+    
+    .manga-title {
+        font-size: 1rem;
+    }
+    
+    .manga-details, .manga-description {
+        display: none; /* Ocultamos detalles en tarjetas móviles */
     }
     
     .manga-actions {
         flex-direction: column;
+        gap: 0.25rem;
     }
     
-    .manga-image-container {
-        height: 300px;
-    }
-}
-
-@media (max-width: 480px) {
-    .pagination {
-        flex-wrap: wrap;
+    .manga-button, .manga-link {
+        padding: 0.4rem;
+        font-size: 0.8rem;
+        text-align: center;
     }
     
-    .pagination-button {
-        margin-bottom: 0.5rem;
-    }
-    
-    .manga-image-container {
-        height: 250px;
-    }
-    
-    .covers-gallery {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 0.5rem;
-    }
-    
-    .cover-image {
-        height: 160px;
-    }
-}
-
-/* Añadir estas reglas al final del archivo CSS */
-
-/* Estilos específicos para móviles */
-@media (max-width: 768px) {
-    /* Ajustes para la galería de portadas en móvil */
+    /* Mejoras para la galería de portadas en móvil */
     .covers-gallery {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -382,58 +352,65 @@ select {
         object-fit: contain;
     }
     
-    /* Modal más ajustado para móviles */
     .modal-content {
         margin: 1rem auto;
         padding: 1.5rem;
         width: 95%;
     }
-    
-    /* Mejorar visualización de botones en móvil */
-    .manga-actions {
-        flex-direction: column;
-        gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.2rem;
     }
     
-    .manga-button, .manga-link {
-        text-align: center;
-        width: 100%;
+    .manga-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .manga-image {
+        height: 180px;
     }
 }
 
-/* Añadir estas reglas para mejorar la visualización de imágenes */
-.cover-image {
+/* Asegurar que el modal de descripción sea visible */
+#descriptionModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    object-fit: contain;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    background-color: #f0f0f0;
-    margin-bottom: 0.5rem;
-}
-
-/* Clase específica para imágenes en modal de portadas */
-.modal-cover {
-    max-width: 100%;
-    max-height: 70vh;
-    display: block;
-    margin: 0 auto;
-}
-
-/* Mejorar visualización del modal de descripción */
-#descriptionModalText {
-    line-height: 1.6;
-    max-height: 50vh;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
     overflow-y: auto;
-    padding-right: 0.5rem;
 }
 
-/* Personalizar scrollbar para modal de descripción */
-#descriptionModalText::-webkit-scrollbar {
-    width: 6px;
+#descriptionModal .modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
-#descriptionModalText::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
-    border-radius: 3px;
+/* Para móviles */
+@media (max-width: 768px) {
+    #descriptionModal .modal-content {
+        margin: 10% auto;
+        width: 95%;
+        padding: 15px;
+    }
+    
+    #descriptionModalDetails {
+        display: block !important;
+    }
+    
+    #descriptionModalText {
+        display: block !important;
+        margin-top: 15px;
+    }
 }

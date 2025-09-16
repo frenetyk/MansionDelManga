@@ -3,6 +3,9 @@ let currentPage = 1;
 const itemsPerPage = 30;
 let filteredMangas = [];
 let allMangas = [];
+let currentImageIndex = 0;
+let totalImages = 0;
+let imagesElements = [];
 
 // Cargar datos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
@@ -59,6 +62,19 @@ function setupEventListeners() {
     
     // Modales
     document.getElementById('closeCoversModal').addEventListener('click', () => {
+        // Limpiar controles de navegación
+        const existingNav = document.querySelector('.covers-navigation');
+        if (existingNav) {
+            existingNav.remove();
+        }
+        
+        // Limpiar event listeners de teclado
+        const gallery = document.getElementById('coversGallery');
+        if (gallery && gallery._keydownHandler) {
+            document.removeEventListener('keydown', gallery._keydownHandler);
+            gallery._keydownHandler = null;
+        }
+        
         document.getElementById('coversModal').style.display = 'none';
     });
     
@@ -69,12 +85,66 @@ function setupEventListeners() {
     // Cerrar modales al hacer clic fuera
     window.addEventListener('click', (e) => {
         if (e.target === document.getElementById('coversModal')) {
-            document.getElementById('coversModal').style.display = 'none';
+            document.getElementById('closeCoversModal').click();
         }
         if (e.target === document.getElementById('descriptionModal')) {
-            document.getElementById('descriptionModal').style.display = 'none';
+            document.getElementById('closeDescriptionModal').click();
         }
     });
+    
+    // Toggle de filtros para móviles
+    document.getElementById('toggleFilters').addEventListener('click', () => {
+        const filters = document.querySelector('.filters');
+        const toggleButton = document.getElementById('toggleFilters');
+        
+        filters.classList.toggle('active');
+        
+        if (filters.classList.contains('active')) {
+            toggleButton.textContent = 'Ocultar Filtros';
+        } else {
+            toggleButton.textContent = 'Mostrar Filtros';
+        }
+    });
+
+    // Cerrar filtros al hacer clic fuera de ellos en móvil
+    if (window.innerWidth <= 768) {
+        document.addEventListener('click', (e) => {
+            const filters = document.querySelector('.filters');
+            const toggleButton = document.getElementById('toggleFilters');
+            
+            if (filters.classList.contains('active') && 
+                !filters.contains(e.target) && 
+                e.target !== toggleButton) {
+                filters.classList.remove('active');
+                toggleButton.textContent = 'Mostrar Filtros';
+            }
+        });
+    }
+
+    // Ajustar el header al hacer scroll en móvil
+    let lastScrollTop = 0;
+    const header = document.querySelector('header');
+
+    if (window.innerWidth <= 768) {
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                // Scrolling down - ocultar header
+                header.style.transform = 'translateY(-100%)';
+                document.querySelector('.filters').classList.remove('active');
+                document.getElementById('toggleFilters').textContent = 'Mostrar Filtros';
+            } else {
+                // Scrolling up - mostrar header
+                header.style.transform = 'translateY(0)';
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+        
+        // Añadir transición suave
+        header.style.transition = 'transform 0.3s ease';
+    }
 }
 
 // Aplicar filtros y búsqueda
@@ -105,6 +175,12 @@ function applyFilters() {
     
     currentPage = 1;
     displayMangas();
+    
+    // En móvil, cerrar los filtros después de aplicarlos
+    if (window.innerWidth <= 768) {
+        document.querySelector('.filters').classList.remove('active');
+        document.getElementById('toggleFilters').textContent = 'Mostrar Filtros';
+    }
 }
 
 // Mostrar mangas con paginación
@@ -143,27 +219,26 @@ function displayMangas() {
         // Escapar comillas en el título para evitar problemas con JSON
         const escapedTitle = manga.titulo.replace(/'/g, "\\'").replace(/"/g, '\\"');
         
-        // En la función displayMangas(), dentro del forEach que crea las tarjetas:
-mangaCard.innerHTML = `
-    <div class="manga-image-container">
-        <img class="manga-image" src="${mainImage}" alt="${manga.titulo}" onerror="handleImageError(this, '${manga.titulo}')">
-    </div>
-    <div class="manga-info">
-        <h3 class="manga-title">${manga.titulo}</h3>
-        <div class="manga-details">
-            <p><strong>Demografia:</strong> ${manga.demografia}</p>
-            <p><strong>Volúmenes:</strong> ${manga.volumenes}</p>
-            <p><strong>Guionista:</strong> ${manga.guionista}</p>
-            <p><strong>Dibujante:</strong> ${manga.dibujante}</p>
-        </div>
-        <p class="manga-description">${truncateDescription(manga.descripcion, 150)}</p>
-        <div class="manga-actions">
-            <button class="manga-button view-covers-btn" data-title="${escapedTitle}" data-images='${JSON.stringify(manga.imagenes)}'>Ver Portadas</button>
-            <button class="manga-button view-desc-btn" data-manga='${JSON.stringify(manga).replace(/'/g, "\\'")}'>Ver Descripción</button>
-            ${manga.enlace ? `<a class="manga-link" href="${manga.enlace}" target="_blank">Ver Enlace</a>` : ''}
-        </div>
-    </div>
-`;
+        mangaCard.innerHTML = `
+            <div class="manga-image-container">
+                <img class="manga-image" src="${mainImage}" alt="${manga.titulo}" onerror="handleImageError(this, '${manga.titulo}')">
+            </div>
+            <div class="manga-info">
+                <h3 class="manga-title">${manga.titulo}</h3>
+                <div class="manga-details">
+                    <p><strong>Demografia:</strong> ${manga.demografia}</p>
+                    <p><strong>Volúmenes:</strong> ${manga.volumenes}</p>
+                    <p><strong>Guionista:</strong> ${manga.guionista}</p>
+                    <p><strong>Dibujante:</strong> ${manga.dibujante}</p>
+                </div>
+                <p class="manga-description">${truncateDescription(manga.descripcion, 150)}</p>
+                <div class="manga-actions">
+                    <button class="manga-button view-covers-btn" data-title="${escapedTitle}" data-images='${JSON.stringify(manga.imagenes)}'>Ver Portadas</button>
+                    <button class="manga-button view-desc-btn" data-manga='${JSON.stringify(manga).replace(/'/g, "\\'")}'>Ver Descripción</button>
+                    ${manga.enlace ? `<a class="manga-link" href="${manga.enlace}" target="_blank">Ver Enlace</a>` : ''}
+                </div>
+            </div>
+        `;
         
         mangaGrid.appendChild(mangaCard);
     });
@@ -247,7 +322,7 @@ function handleImageError(img, title) {
     img.onerror = null; // Prevenir bucles infinitos
 }
 
-// Reemplazar la función showCovers con esta versión mejorada
+// Mostrar portadas en modal
 function showCovers(title, images) {
     const modal = document.getElementById('coversModal');
     const titleElement = document.getElementById('coversModalTitle');
@@ -272,7 +347,7 @@ function showCovers(title, images) {
         img.className = 'cover-image modal-cover';
         img.src = image;
         img.alt = `Portada ${index + 1} de ${title}`;
-        img.loading = 'lazy'; // Carga diferida para mejor rendimiento
+        img.loading = 'lazy';
         img.onerror = function() {
             this.src = 'https://via.placeholder.com/300x400/cccccc/666666?text=Imagen+no+disponible';
         };
@@ -293,26 +368,38 @@ function showCovers(title, images) {
     modal.style.display = 'block';
     
     // Añadir funcionalidad de swipe para móviles
-    setupSwipeGestures(gallery);
+    setupSwipeGestures(gallery, images.length);
 }
 
 // Función para configurar gestos de deslizamiento en móviles
-function setupSwipeGestures(gallery) {
+function setupSwipeGestures(gallery, totalImages) {
     let touchStartX = 0;
     let touchEndX = 0;
     let currentImageIndex = 0;
     const images = gallery.querySelectorAll('.cover-container');
+    
+    // Eliminar controles de navegación anteriores si existen
+    const existingNav = gallery.parentNode.querySelector('.covers-navigation');
+    if (existingNav) {
+        existingNav.remove();
+    }
+    
+    const existingStyle = document.getElementById('covers-nav-style');
+    if (existingStyle) {
+        existingStyle.remove();
+    }
     
     // Ocultar todas las imágenes excepto la primera
     images.forEach((img, index) => {
         img.style.display = index === 0 ? 'block' : 'none';
     });
     
-    // Solo activar swipe si hay más de una imagen
+    // Solo activar navegación si hay más de una imagen
     if (images.length <= 1) return;
     
     // Añadir indicador de navegación
     const navIndicator = document.createElement('div');
+    navIndicator.className = 'covers-navigation';
     navIndicator.style.textAlign = 'center';
     navIndicator.style.margin = '1rem 0';
     navIndicator.innerHTML = `
@@ -322,25 +409,29 @@ function setupSwipeGestures(gallery) {
     `;
     gallery.parentNode.insertBefore(navIndicator, gallery.nextSibling);
     
-    // Estilos para botones de navegación
-    const style = document.createElement('style');
-    style.textContent = `
-        .nav-button {
-            background: var(--accent-color);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.2rem;
-            margin: 0 0.5rem;
-            cursor: pointer;
-        }
-        .nav-button:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-    `;
-    document.head.appendChild(style);
+    // Estilos para botones de navegación (solo agregar una vez)
+    if (!document.getElementById('covers-nav-style')) {
+        const style = document.createElement('style');
+        style.id = 'covers-nav-style';
+        style.textContent = `
+            .nav-button {
+                background: var(--accent-color);
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                margin: 0 0.5rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .nav-button:hover {
+                background: var(--primary-color);
+                color: white;
+            }
+        `;
+        document.head.appendChild(style);
+    }
     
     // Funcionalidad para botones de navegación
     document.getElementById('prevCover').addEventListener('click', () => {
@@ -362,22 +453,27 @@ function setupSwipeGestures(gallery) {
     }, false);
     
     // Funcionalidad para teclado
-    document.addEventListener('keydown', e => {
+    const handleKeydown = (e) => {
         if (e.key === 'ArrowLeft') navigateCovers(-1);
         if (e.key === 'ArrowRight') navigateCovers(1);
         if (e.key === 'Escape') document.getElementById('closeCoversModal').click();
-    });
+    };
+    
+    document.addEventListener('keydown', handleKeydown);
+    
+    // Guardar referencia para poder remover el event listener después
+    gallery._keydownHandler = handleKeydown;
     
     function handleSwipe() {
-        const minSwipeDistance = 50; // Distancia mínima para considerar un swipe
+        const minSwipeDistance = 50;
         const distance = touchStartX - touchEndX;
         
         if (Math.abs(distance) < minSwipeDistance) return;
         
         if (distance > 0) {
-            navigateCovers(1); // Swipe izquierda -> siguiente imagen
+            navigateCovers(1);
         } else {
-            navigateCovers(-1); // Swipe derecha -> imagen anterior
+            navigateCovers(-1);
         }
     }
     
@@ -398,67 +494,94 @@ function setupSwipeGestures(gallery) {
         document.getElementById('currentIndicator').textContent = 
             `${currentImageIndex + 1}/${images.length}`;
     }
-}
-
-// Mejorar la función showDescription para móviles
-function showDescription(manga) {
-    const modal = document.getElementById('descriptionModal');
-    const titleElement = document.getElementById('descriptionModalTitle');
-    const detailsElement = document.getElementById('descriptionModalDetails');
-    const descriptionElement = document.getElementById('descriptionModalText');
     
-    titleElement.textContent = manga.titulo;
-    
-    detailsElement.innerHTML = `
-        <p><strong>Demografia:</strong> ${manga.demografia}</p>
-        <p><strong>Volúmenes:</strong> ${manga.volumenes}</p>
-        <p><strong>Editorial:</strong> ${manga.editorial}</p>
-        <p><strong>Guionista:</strong> ${manga.guionista}</p>
-        <p><strong>Dibujante:</strong> ${manga.dibujante}</p>
-    `;
-    
-    descriptionElement.textContent = manga.descripcion;
-    
-    modal.style.display = 'block';
-    
-    // Añadir funcionalidad de cierre con gesto de deslizamiento hacia abajo
-    let touchStartY = 0;
-    
-    modal.addEventListener('touchstart', e => {
-        touchStartY = e.changedTouches[0].screenY;
-    }, false);
-    
-    modal.addEventListener('touchend', e => {
-        const touchEndY = e.changedTouches[0].screenY;
-        const distance = touchEndY - touchStartY;
-        
-        // Si el deslizamiento hacia abajo es suficientemente largo, cerrar modal
-        if (distance > 100) {
-            document.getElementById('closeDescriptionModal').click();
+    // Limpiar event listeners cuando se cierre el modal
+    const originalCloseHandler = document.getElementById('closeCoversModal').onclick;
+    document.getElementById('closeCoversModal').onclick = function() {
+        if (gallery._keydownHandler) {
+            document.removeEventListener('keydown', gallery._keydownHandler);
         }
-    }, false);
+        if (originalCloseHandler) {
+            originalCloseHandler.call(this);
+        }
+    };
 }
 
-// Mostrar descripción en modal
+// Mostrar descripción en modal (VERSIÓN CORREGIDA - solo esta función debe existir)
+// Mostrar descripción en modal (VERSIÓN CORREGIDA)
 function showDescription(manga) {
     const modal = document.getElementById('descriptionModal');
     const titleElement = document.getElementById('descriptionModalTitle');
     const detailsElement = document.getElementById('descriptionModalDetails');
     const descriptionElement = document.getElementById('descriptionModalText');
     
+    // Limpiar contenido previo
+    titleElement.textContent = '';
+    detailsElement.innerHTML = '';
+    descriptionElement.textContent = '';
+    
     titleElement.textContent = manga.titulo;
     
     detailsElement.innerHTML = `
-        <p><strong>Demografia:</strong> ${manga.demografia}</p>
-        <p><strong>Volúmenes:</strong> ${manga.volumenes}</p>
-        <p><strong>Editorial:</strong> ${manga.editorial}</p>
-        <p><strong>Guionista:</strong> ${manga.guionista}</p>
-        <p><strong>Dibujante:</strong> ${manga.dibujante}</p>
+        <p><strong>Demografia:</strong> ${manga.demografia || 'No disponible'}</p>
+        <p><strong>Volúmenes:</strong> ${manga.volumenes || 'No disponible'}</p>
+        <p><strong>Editorial:</strong> ${manga.editorial || 'No disponible'}</p>
+        <p><strong>Guionista:</strong> ${manga.guionista || 'No disponible'}</p>
+        <p><strong>Dibujante:</strong> ${manga.dibujante || 'No disponible'}</p>
     `;
     
     descriptionElement.textContent = manga.descripcion || 'Descripción no disponible';
     
-    modal.style.display = 'block';
+    // Forzar el redibujado del modal
+    modal.style.display = 'none';
+    setTimeout(() => {
+        modal.style.display = 'block';
+    }, 10);
+    
+    // Añadir funcionalidad de cierre con gesto de deslizamiento hacia abajo SOLO EN MÓVIL
+    if (window.innerWidth <= 768) {
+        let touchStartY = 0;
+        
+        const touchStartHandler = (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        };
+        
+        const touchEndHandler = (e) => {
+            const touchEndY = e.changedTouches[0].screenY;
+            const distance = touchEndY - touchStartY;
+            
+            // Si el deslizamiento hacia abajo es suficientemente largo, cerrar modal
+            if (distance > 100) {
+                document.getElementById('closeDescriptionModal').click();
+            }
+        };
+        
+        // Remover event listeners previos si existen
+        modal.removeEventListener('touchstart', touchStartHandler);
+        modal.removeEventListener('touchend', touchEndHandler);
+        
+        // Añadir nuevos event listeners
+        modal.addEventListener('touchstart', touchStartHandler, { once: true });
+        modal.addEventListener('touchend', touchEndHandler, { once: true });
+        
+        // Limpiar event listeners cuando se cierre el modal
+        const originalCloseHandler = document.getElementById('closeDescriptionModal').onclick;
+        document.getElementById('closeDescriptionModal').onclick = function() {
+            modal.removeEventListener('touchstart', touchStartHandler);
+            modal.removeEventListener('touchend', touchEndHandler);
+            if (originalCloseHandler) {
+                originalCloseHandler.call(this);
+            }
+        };
+    }
+    
+    // Depuración: verificar que los elementos existen y tienen contenido
+    console.log('Modal elements:', {
+        title: titleElement.textContent,
+        details: detailsElement.innerHTML,
+        description: descriptionElement.textContent,
+        modalDisplay: modal.style.display
+    });
 }
 
 // Función para depuración - verificar que los botones funcionen
