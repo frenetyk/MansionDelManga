@@ -62,17 +62,19 @@ function setupEventListeners() {
     
     // Modales
     document.getElementById('closeCoversModal').addEventListener('click', () => {
-        // Limpiar controles de navegación
-        const existingNav = document.querySelector('.covers-navigation');
-        if (existingNav) {
-            existingNav.remove();
-        }
-        
-        // Limpiar event listeners de teclado
-        const gallery = document.getElementById('coversGallery');
-        if (gallery && gallery._keydownHandler) {
-            document.removeEventListener('keydown', gallery._keydownHandler);
-            gallery._keydownHandler = null;
+        // Limpiar controles de navegación (solo en móvil)
+        if (window.innerWidth <= 768) {
+            const existingNav = document.querySelector('.covers-navigation');
+            if (existingNav) {
+                existingNav.remove();
+            }
+            
+            // Limpiar event listeners de teclado
+            const gallery = document.getElementById('coversGallery');
+            if (gallery && gallery._keydownHandler) {
+                document.removeEventListener('keydown', gallery._keydownHandler);
+                gallery._keydownHandler = null;
+            }
         }
         
         document.getElementById('coversModal').style.display = 'none';
@@ -338,40 +340,87 @@ function showCovers(title, images) {
         return;
     }
     
-    // Crear contenedor para cada imagen con número
-    images.forEach((image, index) => {
-        const container = document.createElement('div');
-        container.className = 'cover-container';
+    // Modo escritorio: mostrar todas las portadas
+    if (window.innerWidth > 768) {
+        // Crear contenedor para todas las imágenes
+        images.forEach((image, index) => {
+            const container = document.createElement('div');
+            container.className = 'cover-container';
+            container.style.display = 'inline-block';
+            container.style.margin = '10px';
+            container.style.textAlign = 'center';
+            container.style.verticalAlign = 'top';
+            
+            const img = document.createElement('img');
+            img.className = 'cover-image modal-cover';
+            img.src = image;
+            img.alt = `Portada ${index + 1} de ${title}`;
+            img.loading = 'lazy';
+            img.style.maxWidth = '200px';
+            img.style.maxHeight = '300px';
+            img.style.objectFit = 'contain';
+            img.style.borderRadius = '5px';
+            img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+            img.onerror = function() {
+                this.src = 'https://via.placeholder.com/200x300/cccccc/666666?text=Imagen+no+disponible';
+            };
+            
+            const number = document.createElement('p');
+            number.className = 'cover-number';
+            number.textContent = `Portada #${index + 1}`;
+            number.style.marginTop = '0.5rem';
+            number.style.fontSize = '0.9rem';
+            number.style.color = '#666';
+            
+            container.appendChild(img);
+            container.appendChild(number);
+            gallery.appendChild(container);
+        });
         
-        const img = document.createElement('img');
-        img.className = 'cover-image modal-cover';
-        img.src = image;
-        img.alt = `Portada ${index + 1} de ${title}`;
-        img.loading = 'lazy';
-        img.onerror = function() {
-            this.src = 'https://via.placeholder.com/300x400/cccccc/666666?text=Imagen+no+disponible';
-        };
+        // Ajustar el estilo de la galería para modo escritorio
+        gallery.style.textAlign = 'center';
+        gallery.style.overflowY = 'auto';
+        gallery.style.maxHeight = '70vh';
         
-        const number = document.createElement('p');
-        number.className = 'cover-number';
-        number.textContent = `Portada ${index + 1} de ${images.length}`;
-        number.style.textAlign = 'center';
-        number.style.marginTop = '0.5rem';
-        number.style.fontSize = '0.9rem';
-        number.style.color = '#666';
+    } else {
+        // Modo móvil: mostrar con controles de navegación
+        images.forEach((image, index) => {
+            const container = document.createElement('div');
+            container.className = 'cover-container';
+            
+            const img = document.createElement('img');
+            img.className = 'cover-image modal-cover';
+            img.src = image;
+            img.alt = `Portada ${index + 1} de ${title}`;
+            img.loading = 'lazy';
+            img.style.width = '100%';
+            img.style.maxHeight = '60vh';
+            img.style.objectFit = 'contain';
+            img.onerror = function() {
+                this.src = 'https://via.placeholder.com/300x400/cccccc/666666?text=Imagen+no+disponible';
+            };
+            
+            const number = document.createElement('p');
+            number.className = 'cover-number';
+            number.textContent = `Portada ${index + 1} de ${images.length}`;
+            number.style.textAlign = 'center';
+            number.style.marginTop = '0.5rem';
+            number.style.fontSize = '0.9rem';
+            number.style.color = '#666';
+            
+            container.appendChild(img);
+            container.appendChild(number);
+            gallery.appendChild(container);
+        });
         
-        container.appendChild(img);
-        container.appendChild(number);
-        gallery.appendChild(container);
-    });
+        // Añadir funcionalidad de swipe para móviles
+        setupSwipeGestures(gallery, images.length);
+    }
     
     modal.style.display = 'block';
-    
-    // Añadir funcionalidad de swipe para móviles
-    setupSwipeGestures(gallery, images.length);
 }
 
-// Función para configurar gestos de deslizamiento en móviles
+// Función para configurar gestos de deslizamiento en móviles (solo para móvil)
 function setupSwipeGestures(gallery, totalImages) {
     let touchStartX = 0;
     let touchEndX = 0;
@@ -382,11 +431,6 @@ function setupSwipeGestures(gallery, totalImages) {
     const existingNav = gallery.parentNode.querySelector('.covers-navigation');
     if (existingNav) {
         existingNav.remove();
-    }
-    
-    const existingStyle = document.getElementById('covers-nav-style');
-    if (existingStyle) {
-        existingStyle.remove();
     }
     
     // Ocultar todas las imágenes excepto la primera
@@ -402,6 +446,12 @@ function setupSwipeGestures(gallery, totalImages) {
     navIndicator.className = 'covers-navigation';
     navIndicator.style.textAlign = 'center';
     navIndicator.style.margin = '1rem 0';
+    navIndicator.style.position = 'sticky';
+    navIndicator.style.bottom = '10px';
+    navIndicator.style.background = 'rgba(255,255,255,0.9)';
+    navIndicator.style.padding = '10px';
+    navIndicator.style.borderRadius = '20px';
+    navIndicator.style.zIndex = '1001';
     navIndicator.innerHTML = `
         <button class="nav-button" id="prevCover">◀</button>
         <span id="currentIndicator">1/${images.length}</span>
@@ -409,29 +459,26 @@ function setupSwipeGestures(gallery, totalImages) {
     `;
     gallery.parentNode.insertBefore(navIndicator, gallery.nextSibling);
     
-    // Estilos para botones de navegación (solo agregar una vez)
-    if (!document.getElementById('covers-nav-style')) {
-        const style = document.createElement('style');
-        style.id = 'covers-nav-style';
-        style.textContent = `
-            .nav-button {
-                background: var(--accent-color);
-                border: none;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-                margin: 0 0.5rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            .nav-button:hover {
-                background: var(--primary-color);
-                color: white;
-            }
-        `;
-        document.head.appendChild(style);
-    }
+    // Estilos para botones de navegación
+    const navStyle = document.createElement('style');
+    navStyle.textContent = `
+        .nav-button {
+            background: var(--accent-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+    `;
+    document.head.appendChild(navStyle);
     
     // Funcionalidad para botones de navegación
     document.getElementById('prevCover').addEventListener('click', () => {
@@ -507,8 +554,7 @@ function setupSwipeGestures(gallery, totalImages) {
     };
 }
 
-// Mostrar descripción en modal (VERSIÓN CORREGIDA - solo esta función debe existir)
-// Mostrar descripción en modal (VERSIÓN CORREGIDA)
+// Mostrar descripción en modal
 function showDescription(manga) {
     const modal = document.getElementById('descriptionModal');
     const titleElement = document.getElementById('descriptionModalTitle');
@@ -574,14 +620,6 @@ function showDescription(manga) {
             }
         };
     }
-    
-    // Depuración: verificar que los elementos existen y tienen contenido
-    console.log('Modal elements:', {
-        title: titleElement.textContent,
-        details: detailsElement.innerHTML,
-        description: descriptionElement.textContent,
-        modalDisplay: modal.style.display
-    });
 }
 
 // Función para depuración - verificar que los botones funcionen

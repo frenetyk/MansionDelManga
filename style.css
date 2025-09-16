@@ -414,3 +414,63 @@ select {
         margin-top: 15px;
     }
 }
+
+/* Estilos para el modal de portadas en escritorio */
+#coversModal .modal-content {
+    max-width: 90%;
+    width: auto;
+}
+
+/* Para modo escritorio - galería completa */
+.cover-container {
+    vertical-align: top;
+}
+
+.cover-image {
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Para modo móvil - navegación */
+.covers-navigation {
+    position: sticky;
+    bottom: 10px;
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 20px;
+    z-index: 1001;
+}
+
+.nav-button {
+    background: var(--accent-color);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    margin: 0 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #coversModal .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+    
+    .cover-container {
+        text-align: center;
+    }
+    
+    .cover-image {
+        max-width: 100%;
+        height: auto;
+    }
+}
