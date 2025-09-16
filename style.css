@@ -228,28 +228,29 @@ main {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    justify-content: space-between;
+    min-height: 180px; /* Altura mínima para la info */
 }
 
 .manga-title {
     font-size: 1.3rem;
     font-weight: bold;
     color: var(--primary-color);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     line-height: 1.3;
     text-align: center;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3; /* Máximo 3 líneas */
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 3.2rem;
+    min-height: 3.9rem; /* Altura mínima para 2 líneas */
+    max-height: 5.85rem; /* Altura máxima para 3 líneas */
 }
 
 .manga-actions {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    margin-top: auto;
+    margin-top: auto; /* Empuja los botones hacia abajo */
 }
 
 .manga-button {
@@ -649,4 +650,123 @@ select:focus,
 input:focus {
     outline: 2px solid var(--info-color);
     outline-offset: 2px;
+}
+
+/* Responsive Design - Móvil */
+@media (max-width: 768px) {
+    .manga-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+    
+    .manga-card {
+        min-height: 380px; /* Altura mínima uniforme */
+    }
+    
+    .manga-image-container {
+        height: 200px; /* Reducir altura de imagen en móvil */
+    }
+    
+    .manga-info {
+        padding: 1rem;
+        min-height: 150px; /* Reducir altura mínima en móvil */
+    }
+    
+    .manga-title {
+        font-size: 1rem;
+        min-height: 2.8rem; /* 2 líneas */
+        max-height: 4.2rem; /* 3 líneas */
+        -webkit-line-clamp: 2; /* Solo 2 líneas en móvil */
+        margin-bottom: 0.8rem;
+    }
+    
+    .manga-button, .manga-link {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+        min-height: 44px; /* Altura táctil mínima */
+    }
+    
+    .manga-button i, .manga-link i {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .manga-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.8rem;
+    }
+    
+    .manga-card {
+        min-height: 360px; /* Más compacto en móviles pequeños */
+    }
+    
+    .manga-image-container {
+        height: 180px;
+    }
+    
+    .manga-info {
+        padding: 0.8rem;
+        min-height: 140px;
+    }
+    
+    .manga-title {
+        font-size: 0.9rem;
+        min-height: 2.5rem;
+        max-height: 3.75rem;
+    }
+    
+    .manga-actions {
+        gap: 0.5rem;
+    }
+}
+
+/* Para asegurar que los textos muy largos no desborden */
+.manga-title {
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Mejorar la visualización de títulos largos */
+.manga-info {
+    justify-content: flex-start;
+}
+
+/* Asegurar que las tarjetas mantengan proporción en móvil */
+@media (max-width: 768px) {
+    .manga-card {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .manga-image-container {
+        flex: 0 0 auto;
+    }
+    
+    .manga-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .manga-title {
+        flex: 0 0 auto;
+    }
+    
+    .manga-actions {
+        flex: 0 0 auto;
+        margin-top: auto;
+    }
+}
+
+/* Prevenir que los títulos sean demasiado largos */
+.manga-title {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
